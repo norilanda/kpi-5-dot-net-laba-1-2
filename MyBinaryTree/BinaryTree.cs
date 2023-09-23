@@ -10,11 +10,15 @@ public class BinaryTree<T> : IBinaryTree<T> where T : IComparable<T>
 
     private IEnumeratorFactory<T> _enumeratorFactory;
 
-    private IComparer<T> _comparer;
+    private readonly IComparer<T> _comparer;
 
-    public int Count => throw new NotImplementedException();
+    private int _count = 0;
 
-    public bool IsReadOnly => throw new NotImplementedException();
+    public int Count => _count;
+
+    public bool IsReadOnly => false;
+
+    public IEnumeratorFactory<T> EnumeratorFactory { set => _enumeratorFactory = value; }
 
     public BinaryTree() : this(new InorderEnumeratorFactory<T>()) { }
 
@@ -28,12 +32,51 @@ public class BinaryTree<T> : IBinaryTree<T> where T : IComparable<T>
 
     public void Add(T item)
     {
-        throw new NotImplementedException();
+        if (item is null)
+            throw new ArgumentNullException();
+
+        if (_root == null)
+        {
+            _root = new Node<T>(item);
+        }
+        else
+        {
+            Node<T>? previous;
+            Node<T>? current = _root;
+
+            do
+            {
+                previous = current;
+                current = _comparer.Compare(item, current.Value) switch
+                {
+                    < 0 => current.Left,
+                    > 0 => current.Right,
+                    0 => throw new InvalidOperationException($"Tree already contains item '{item}'")
+                };
+            }
+            while (current != null);
+
+            if (_comparer.Compare(item, previous.Value) > 0)
+                previous.Right = new Node<T>(item);
+            else
+                previous.Left = new Node<T>(item);
+        }
+        _count++;
     }
 
     public bool Contains(T item)
     {
-        throw new NotImplementedException();
+        Node<T>? current = _root;
+        while (current != null)
+        {
+            switch (_comparer.Compare(item, current.Value))
+            {
+                case < 0: current = current.Left; break;
+                case > 0: current = current.Right; break;
+                default: return true;
+            }
+        }
+        return false;
     }
 
     public T? Search(T item)
@@ -43,24 +86,85 @@ public class BinaryTree<T> : IBinaryTree<T> where T : IComparable<T>
 
     public void Clear()
     {
-        throw new NotImplementedException();
+        _root = null;
+        _count = 0;
     }
 
     public void CopyTo(T[] array, int arrayIndex)
     {
-        throw new NotImplementedException();
+        if (array.Length - arrayIndex < _count)
+        {
+            throw new ArgumentOutOfRangeException(nameof(array));
+        }
+
+        if (_root == null)
+            throw new InvalidOperationException("Tree does not contain any elements");
+
+        foreach (var nodeValue in this)
+        {
+            array[arrayIndex] = nodeValue;
+            arrayIndex++;
+        }
     }
 
     public bool Remove(T item)
     {
-        throw new NotImplementedException();
+        if (item is null)
+            return false;
+
+        bool removed = false;
+        _root = RemoveRecursion(_root, item);
+
+        if (removed)
+            _count--;
+
+        return removed;
+
+
+        Node<T>? RemoveRecursion(Node<T>? current, T item)
+        {
+            if (current == null)
+                return current;
+
+            switch (_comparer.Compare(item, current.Value))
+            {
+                case < 0:
+                    {
+                        current.Left = RemoveRecursion(current.Left, item);
+                        break;
+                    }
+                case > 0:
+                    {
+                        current.Right = RemoveRecursion(current.Right, item);
+                        break;
+                    }
+                default:
+                    {
+                        removed = true;
+                        if (current.Left == null)
+                        {
+                            return current.Right;
+                        }
+                        else if (current.Right == null)
+                        {
+                            return current.Left;
+                        }
+
+                        current.Value = current.Right.InOrderSuccessor();
+                        current.Right = RemoveRecursion(current.Right, current.Value);
+                        break;
+                    }
+            };
+
+            return current;
+        }
     }
+
 
     public IEnumerator<T> GetEnumerator()
     {
         return _enumeratorFactory.CreateEnumerator(_root);
     }
-
 
     IEnumerator IEnumerable.GetEnumerator()
     {
