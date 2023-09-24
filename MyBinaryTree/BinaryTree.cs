@@ -26,6 +26,12 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 
     public IEnumeratorFactory<T> EnumeratorFactory { set => _enumeratorFactory = value; }
 
+    public event EventHandler? TreeCleared;
+
+    public event EventHandler<BinaryTreeEventArgs<T>>? ItemAdded;
+
+    public event EventHandler<BinaryTreeEventArgs<T>>? ItemRemoved;
+
     public BinaryTree() : this(new InorderEnumeratorFactory<T>()) { }
 
     public BinaryTree(IEnumeratorFactory<T> enumeratorFactory) : this(enumeratorFactory, Comparer<T>.Default) { }
@@ -69,6 +75,7 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         }
         _count++;
         _version++;
+        ItemAdded?.Invoke(this, new BinaryTreeEventArgs<T>(item));
     }
 
     public bool Contains(T item)
@@ -91,6 +98,7 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         _root = null;
         _count = 0;
         _version++;
+        TreeCleared?.Invoke(this, EventArgs.Empty);
     }
 
     public void CopyTo(T[] array, int arrayIndex)
@@ -124,6 +132,7 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         {
             _count--;
             _version++;
+            ItemRemoved?.Invoke(this, new BinaryTreeEventArgs<T>(item));
         }
 
         return removed;
