@@ -4,7 +4,7 @@ using System.Collections;
 
 namespace MyBinaryTree;
 
-public class BinaryTree<T> : IBinaryTree<T> where T : IComparable<T>
+public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 {
     private Node<T>? _root;
 
@@ -77,11 +77,6 @@ public class BinaryTree<T> : IBinaryTree<T> where T : IComparable<T>
             }
         }
         return false;
-    }
-
-    public T? Search(T item)
-    {
-        throw new NotImplementedException();
     }
 
     public void Clear()
