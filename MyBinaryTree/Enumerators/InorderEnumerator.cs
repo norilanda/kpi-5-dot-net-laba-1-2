@@ -4,26 +4,45 @@ namespace MyBinaryTree.Enumerators;
 
 public class InorderEnumerator<T> : IEnumerator<T> where T : IComparable<T>
 {
+    private Node<T>? _currentNode;
+    private Stack<Node<T>> _nodes;
+    private bool _shouldSetCurrentToRight = false;
+
     public InorderEnumerator(Node<T>? root)
     {
-        throw new NotImplementedException();
+        _currentNode = root;
+        _nodes = new Stack<Node<T>>();
     }
-    public T Current => throw new NotImplementedException();
+    public T Current => _currentNode!.Value;
 
-    object IEnumerator.Current => throw new NotImplementedException();
-
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
+    object IEnumerator.Current => _currentNode!.Value;
 
     public bool MoveNext()
     {
-        throw new NotImplementedException();
+        if (_shouldSetCurrentToRight)
+            _currentNode = _currentNode!.Right;
+
+        while (_nodes.Count > 0 || _currentNode != null)
+        {
+            if (_currentNode != null)
+            {
+                _nodes.Push(_currentNode);
+                _currentNode = _currentNode.Left;
+            }
+            else
+            {
+                _currentNode = _nodes.Pop();
+                _shouldSetCurrentToRight = true;
+                return true;
+            }
+        }
+        return false;
     }
 
     public void Reset()
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
+
+    public void Dispose() { }
 }
