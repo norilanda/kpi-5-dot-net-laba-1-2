@@ -4,13 +4,17 @@ namespace MyBinaryTree.Enumerators;
 
 public class InorderEnumerator<T> : IEnumerator<T> where T : IComparable<T>
 {
+    private readonly BinaryTree<T> _tree;
+    private readonly int _version;
     private Node<T>? _currentNode;
     private Stack<Node<T>> _nodes;
     private bool _shouldSetCurrentToRight = false;
 
-    public InorderEnumerator(Node<T>? root)
+    public InorderEnumerator(BinaryTree<T> tree)
     {
-        _currentNode = root;
+        _tree = tree;
+        _version = tree.Version;
+        _currentNode = tree.Root;
         _nodes = new Stack<Node<T>>();
     }
     public T Current => _currentNode!.Value;
@@ -41,7 +45,13 @@ public class InorderEnumerator<T> : IEnumerator<T> where T : IComparable<T>
 
     public void Reset()
     {
-        throw new NotSupportedException();
+        if (_version != _tree.Version)
+        {
+            throw new InvalidOperationException();
+        }
+        _currentNode = _tree.Root;
+        _nodes = new Stack<Node<T>>();
+        _shouldSetCurrentToRight = false;
     }
 
     public void Dispose() { }

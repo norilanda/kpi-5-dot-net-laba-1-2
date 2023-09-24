@@ -4,8 +4,10 @@ namespace MyBinaryTree.EnumeratorFactories;
 
 public class PreorderEnumeratorFactory<T> : IEnumeratorFactory<T> where T : IComparable<T>
 {
-    public IEnumerator<T> CreateEnumerator(Node<T>? node)
+    public IEnumerator<T> CreateEnumerator(BinaryTree<T> tree)
     {
+        Node<T>? node = tree.Root;
+
         if (node != null)
         {
             var nodes = new Stack<Node<T>>();

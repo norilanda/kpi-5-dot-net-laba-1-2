@@ -14,7 +14,13 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 
     private int _count = 0;
 
+    private int _version = 0;
+
+    public Node<T>? Root => _root;
+
     public int Count => _count;
+
+    public int Version => _version;
 
     public bool IsReadOnly => false;
 
@@ -62,6 +68,7 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
                 previous.Left = new Node<T>(item);
         }
         _count++;
+        _version++;
     }
 
     public bool Contains(T item)
@@ -83,11 +90,14 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
     {
         _root = null;
         _count = 0;
+        _version++;
     }
 
     public void CopyTo(T[] array, int arrayIndex)
     {
-        if (array.Length - arrayIndex < _count)
+        if (array == null) 
+            throw new ArgumentNullException(nameof(array));
+        if (arrayIndex < 0 || array.Length - arrayIndex < _count)
         {
             throw new ArgumentOutOfRangeException(nameof(array));
         }
@@ -111,7 +121,10 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         _root = RemoveRecursion(_root, item);
 
         if (removed)
+        {
             _count--;
+            _version++;
+        }
 
         return removed;
 
@@ -155,10 +168,9 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         }
     }
 
-
     public IEnumerator<T> GetEnumerator()
     {
-        return _enumeratorFactory.CreateEnumerator(_root);
+        return _enumeratorFactory.CreateEnumerator(this);
     }
 
     IEnumerator IEnumerable.GetEnumerator()
