@@ -34,6 +34,8 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 
     public BinaryTree() : this(new InorderEnumeratorFactory<T>()) { }
 
+    public BinaryTree(IComparer<T> comparer) : this(new InorderEnumeratorFactory<T>(), comparer) { }
+
     public BinaryTree(IEnumeratorFactory<T> enumeratorFactory) : this(enumeratorFactory, Comparer<T>.Default) { }
 
     public BinaryTree(IEnumeratorFactory<T> enumeratorFactory, IComparer<T> comparer)
