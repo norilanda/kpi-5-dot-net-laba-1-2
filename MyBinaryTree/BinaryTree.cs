@@ -97,6 +97,9 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 
     public bool Contains(T item)
     {
+        if (item is null)
+            return false;
+
         Node<T>? current = _root;
         while (current != null)
         {
@@ -126,9 +129,6 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         {
             throw new ArgumentOutOfRangeException(nameof(array));
         }
-
-        if (_root == null)
-            throw new InvalidOperationException("Tree does not contain any elements");
 
         foreach (var nodeValue in this)
         {
