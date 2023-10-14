@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using MyBinaryTree.Tests.Base;
+using Xunit;
 
 namespace MyBinaryTree.Tests;
 
@@ -15,12 +16,12 @@ public class BinaryTreeRemoveTests : BinaryTreeBaseTests
     public void Remove_WhenItemIsNull_ShouldNotRemove()
     {
         var tree = new BinaryTree<string>() { "David", "Bob", "Alice" };
-        var countBeforeRemove = tree.Count;
+        var expectedCountAfterRemove = tree.Count;
+        var expectedVersion = tree.Version;
 
         var removed = tree.Remove(null!);
 
-        Assert.False(removed);
-        Assert.Equal(countBeforeRemove, tree.Count);
+        AssertNotRemoved<string>(tree, removed, expectedCountAfterRemove, expectedVersion);
     }
 
     [Theory]
@@ -28,12 +29,12 @@ public class BinaryTreeRemoveTests : BinaryTreeBaseTests
     public void Remove_WhenItemIsInTree_ShouldRemove<T>(T[] items, T itemThatInTree) where T : IComparable<T>
     {
         var tree = new BinaryTree<T>(items);
-        var countBeforeRemove = tree.Count;
+        var expectedCountAfterRemove = tree.Count - 1;
+        var expectedVersion = tree.Version + 1;
 
         var removed = tree.Remove(itemThatInTree);
 
-        Assert.True(removed);
-        Assert.Equal(countBeforeRemove - 1, tree.Count);
+        AssertRemoved<T>(tree, removed, expectedCountAfterRemove, expectedVersion);
     }
 
     [Theory]
@@ -41,12 +42,12 @@ public class BinaryTreeRemoveTests : BinaryTreeBaseTests
     public void Remove_WhenItemIsNotInTree_ShouldNotRemove<T>(T[] items, T itemThatNotInTree) where T : IComparable<T>
     {
         var tree = new BinaryTree<T>(items);
-        var countBeforeRemove = tree.Count;
+        var expectedCountAfterRemove = tree.Count;
+        var expectedVersion = tree.Version;
 
         var removed = tree.Remove(itemThatNotInTree);
 
-        Assert.False(removed);
-        Assert.Equal(countBeforeRemove, tree.Count);
+        AssertNotRemoved<T>(tree, removed, expectedCountAfterRemove, expectedVersion);
     }
 
     [Theory]
@@ -65,7 +66,7 @@ public class BinaryTreeRemoveTests : BinaryTreeBaseTests
 
     [Theory]
     [MemberData(nameof(GetDataAndDataToDeleteAndDataToLeftInorder))]
-    public void Remove_WhenRemoveSpecifiedItems_ShouldContainedOtherSpecifiedItemsInorder<T>(
+    public void Remove_WhenRemoveSpecifiedItems_ShouldContainOtherSpecifiedItemsInorder<T>(
         T[] initialData,
         T[] itemsToDelete,
         T[] itemsToLeftInorder) where T : IComparable<T>
@@ -85,9 +86,29 @@ public class BinaryTreeRemoveTests : BinaryTreeBaseTests
     {
         var tree = new BinaryTree<int>();
         int itemToRemove = 0;
+        var expectedCountAfterRemove = tree.Count;
+        var expectedVersion = tree.Version;
 
         var removed = tree.Remove(itemToRemove);
 
-        Assert.False(removed);
+        AssertNotRemoved<int>(tree, removed, expectedCountAfterRemove, expectedVersion);
+    }
+
+    private static void AssertRemoved<T>(BinaryTree<T> tree, bool removed, int expectedCountAfterRemove, int expectedVersion) where T : IComparable<T>
+    {
+        Assert.Multiple(
+            () => Assert.True(removed),
+            () => Assert.Equal(expectedCountAfterRemove, tree.Count),
+            () => Assert.Equal(expectedVersion, tree.Version)
+        );
+    }
+
+    private static void AssertNotRemoved<T>(BinaryTree<T> tree, bool removed, int expectedCountAfterRemove, int expectedVersion) where T : IComparable<T>
+    {
+        Assert.Multiple(
+            () => Assert.False(removed),
+            () => Assert.Equal(expectedCountAfterRemove, tree.Count),
+            () => Assert.Equal(expectedVersion, tree.Version)
+        );
     }
 }

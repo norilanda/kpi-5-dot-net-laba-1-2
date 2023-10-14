@@ -1,4 +1,4 @@
-﻿namespace MyBinaryTree.Tests;
+﻿namespace MyBinaryTree.Tests.Base;
 
 public abstract class BinaryTreeBaseTests
 {

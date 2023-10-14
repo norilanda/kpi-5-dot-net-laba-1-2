@@ -1,5 +1,6 @@
 ﻿using Xunit;
 using FakeItEasy;
+using MyBinaryTree.Tests.Base;
 
 namespace MyBinaryTree.Tests;
 
@@ -36,7 +37,7 @@ public class BinaryTreeEventsTests : BinaryTreeBaseTests
 
     [Theory]
     [MemberData(nameof(GetValuesThatNotContainItem))]
-    public void Add_WhenTreeIsNotEmptyAndOneSubscriber_ArgsItemShouldBeItemToAdd<T>(T[] items, T itemToAdd) where T : IComparable<T>
+    public void Add_WhenTreeIsNotEmptyAndOneSubscriber_ArgsItemShouldBeValid<T>(T[] items, T itemToAdd) where T : IComparable<T>
     {
         var tree = new BinaryTree<T>(items);
         var callback = A.Fake<EventHandler<BinaryTreeEventArgs<T>>>();
@@ -80,7 +81,7 @@ public class BinaryTreeEventsTests : BinaryTreeBaseTests
 
     [Theory]
     [MemberData(nameof(GetValuesThatContainItem))]
-    public void Remove_WhenTreeIsNotEmptyAndOneSubscriber_ArgsItemShouldBeItemRemoved<T>(T[] items, T ItemRemoved) where T : IComparable<T>
+    public void Remove_WhenTreeIsNotEmptyAndOneSubscriber_ArgsItemShouldBeValid<T>(T[] items, T ItemRemoved) where T : IComparable<T>
     {
         var tree = new BinaryTree<T>(items);
         var callback = A.Fake<EventHandler<BinaryTreeEventArgs<T>>>();

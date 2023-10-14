@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using MyBinaryTree.Tests.Base;
+using Xunit;
 
 namespace MyBinaryTree.Tests;
 
@@ -43,6 +44,7 @@ public class BinaryTreeAddTests : BinaryTreeBaseTests
 
         Assert.NotNull(tree.Root?.Right);
         Assert.Equal(nextItem, tree.Root.Right.Value);
+        Assert.Null(tree.Root?.Left);
     }
 
     [Theory]
@@ -56,6 +58,7 @@ public class BinaryTreeAddTests : BinaryTreeBaseTests
 
         Assert.NotNull(tree.Root?.Left);
         Assert.Equal(nextItem, tree.Root.Left.Value);
+        Assert.Null(tree.Root?.Right);
     }
 
     [Theory]
@@ -75,13 +78,18 @@ public class BinaryTreeAddTests : BinaryTreeBaseTests
     public void Add_WhenTreeIsEmpty_ShouldAdd<T>(T[] items, T[] expectedInorder) where T : IComparable<T>
     {
         var tree = new BinaryTree<T>();
+        var expectedVerstion = expectedInorder.Length;
 
         foreach (var item in items)
         {
             tree.Add(item);
         }
 
-        Assert.True(tree.SequenceEqual(expectedInorder));
+        Assert.Multiple(
+                () => Assert.True(tree.SequenceEqual(expectedInorder)),
+                () => Assert.Equal(tree.Count, expectedInorder.Length),
+                () => Assert.Equal(tree.Version, expectedVerstion)
+        );
     }
 
     [Fact]

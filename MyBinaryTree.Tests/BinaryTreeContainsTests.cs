@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using MyBinaryTree.Tests.Base;
+using Xunit;
 
 namespace MyBinaryTree.Tests;
 

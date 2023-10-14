@@ -5,7 +5,7 @@ namespace MyBinaryTree.Tests.EnumeratorsTests;
 public class InorderEnumeratorTests
 {
     [Fact]
-    public void Reset_WhenTreeWasUnchanged_ShouldReset()
+    public void Reset_WhenTreeWasNotchanged_ShouldSetCurrentToRoot()
     {
         // arrange
         var tree = new BinaryTree<int>() { 2, 5, 3 };
@@ -22,7 +22,7 @@ public class InorderEnumeratorTests
     }
 
     [Fact]
-    public void Reset_WhenTreeWasNotChanged_ShouldThrow()
+    public void Reset_WhenTreeWasChanged_ShouldThrow()
     {
         // arrange
         var tree = new BinaryTree<int>() { 2, 5, 3 };
