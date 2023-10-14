@@ -24,7 +24,10 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 
     public bool IsReadOnly => false;
 
-    public IEnumeratorFactory<T> EnumeratorFactory { set => _enumeratorFactory = value; }
+    public IEnumeratorFactory<T> EnumeratorFactory
+    { 
+        set => _enumeratorFactory = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     public event EventHandler? TreeCleared;
 

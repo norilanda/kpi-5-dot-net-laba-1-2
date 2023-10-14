@@ -83,4 +83,14 @@ public class BinaryTreeAddTests : BinaryTreeBaseTests
 
         Assert.True(tree.SequenceEqual(expectedInorder));
     }
+
+    [Fact]
+    public void Add_WhenCustomComparerIsUsedAndItemInTree_ShouldThrow()
+    {
+        var tree = new BinaryTree<string>(StringComparer.OrdinalIgnoreCase) { "Alice", "Bob" };
+
+        var act = () => tree.Add("alice");
+
+        Assert.Throws<InvalidOperationException>(act);
+    }
 }
