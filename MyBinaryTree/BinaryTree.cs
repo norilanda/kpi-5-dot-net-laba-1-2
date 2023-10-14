@@ -24,7 +24,10 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 
     public bool IsReadOnly => false;
 
-    public IEnumeratorFactory<T> EnumeratorFactory { set => _enumeratorFactory = value; }
+    public IEnumeratorFactory<T> EnumeratorFactory
+    { 
+        set => _enumeratorFactory = value ?? throw new ArgumentNullException(nameof(value));
+    }
 
     public event EventHandler? TreeCleared;
 
@@ -43,6 +46,21 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         _enumeratorFactory = enumeratorFactory;
         _comparer = comparer;
     }
+
+    public BinaryTree(IEnumeratorFactory<T> enumeratorFactory, IComparer<T> comparer, IEnumerable<T> items) : this(enumeratorFactory, comparer)
+    {
+        foreach (var item in items)
+        {
+            Add(item);
+        }
+    }
+
+    public BinaryTree(IComparer<T> comparer, IEnumerable<T> items) : this(new InorderEnumeratorFactory<T>(), comparer, items) { }
+
+    public BinaryTree(IEnumeratorFactory<T> enumeratorFactory, IEnumerable<T> items) : this(enumeratorFactory, Comparer<T>.Default, items) { }
+
+    public BinaryTree(IEnumerable<T> items) : this(new InorderEnumeratorFactory<T>(), items) { }
+
 
     public void Add(T item)
     {
@@ -82,6 +100,9 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
 
     public bool Contains(T item)
     {
+        if (item is null)
+            return false;
+
         Node<T>? current = _root;
         while (current != null)
         {
@@ -111,9 +132,6 @@ public class BinaryTree<T> : ICollection<T> where T : IComparable<T>
         {
             throw new ArgumentOutOfRangeException(nameof(array));
         }
-
-        if (_root == null)
-            throw new InvalidOperationException("Tree does not contain any elements");
 
         foreach (var nodeValue in this)
         {
